@@ -36,14 +36,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .mono{font-family:'DM Mono',monospace}
 
 /* ── NAV ── */
-.nav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px 8px;font-size:10px;color:var(--text3);background:none;border:none;cursor:pointer;transition:color .2s;font-family:'DM Sans',sans-serif;letter-spacing:.02em}
+.nav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:max(env(safe-area-inset-bottom),8px)}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px 6px;font-size:10px;color:var(--text3);background:none;border:none;cursor:pointer;transition:color .2s;font-family:'DM Sans',sans-serif;letter-spacing:.02em}
 .nav-btn.active{color:var(--accent2)}
 .nav-btn svg{width:20px;height:20px;stroke-width:1.8}
 .nav-indicator{position:absolute;top:0;height:2px;background:var(--accent);border-radius:0 0 2px 2px;transition:left .3s cubic-bezier(.4,0,.2,1),width .3s}
 
 /* ── PAGES ── */
-.page{display:none;min-height:100vh;padding:0 0 90px}
+.page{display:none;min-height:100vh;padding:0 0 100px}
 .page.active{display:block}
 .page-header{padding:52px 20px 20px;background:linear-gradient(180deg,var(--surface) 0%,transparent 100%)}
 .page-header h1{font-size:22px;font-weight:600;letter-spacing:-.02em}
@@ -545,45 +545,85 @@ function renderHome(){
 }
 
 // ── PAGOS ──
+let activeMonth = null;
+
 function renderPagos(){
   const el=document.getElementById('pagos-list');
-  let html=''; let curMonth='';
-  PAYMENTS.forEach(p=>{
-    const mn=p.month;
-    if(mn!==curMonth){
-      curMonth=mn;
-      html+=`<div class="divider">${mn}</div><div class="card" style="padding:4px 16px">`;
-    }
+  
+  // Get unique months
+  const months=[...new Set(PAYMENTS.map(p=>p.month))];
+  if(!activeMonth) activeMonth=months[0];
+
+  // Month tab bar
+  let tabHtml=`<div style="display:flex;overflow-x:auto;gap:8px;padding:4px 16px 12px;scrollbar-width:none">`;
+  months.forEach(mn=>{
+    const total=PAYMENTS.filter(p=>p.month===mn).reduce((s,p)=>s+p.amt,0);
+    const paidCount=PAYMENTS.filter(p=>p.month===mn&&STATE.paid[p.id]).length;
+    const totalCount=PAYMENTS.filter(p=>p.month===mn).length;
+    const isActive=mn===activeMonth;
+    const allPaid=paidCount===totalCount;
+    tabHtml+=`<button onclick="setMonth('${mn}')" style="
+      flex-shrink:0;padding:8px 14px;border-radius:20px;border:1.5px solid ${isActive?'var(--accent)':'var(--border2)'};
+      background:${isActive?'var(--accent)':'transparent'};color:${isActive?'#fff':'var(--text2)'};
+      font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;
+      display:flex;flex-direction:column;align-items:center;gap:2px;min-width:72px">
+      <span>${mn}</span>
+      <span style="font-size:10px;opacity:.8">${allPaid?'✓ listo':`${paidCount}/${totalCount}`}</span>
+    </button>`;
+  });
+  tabHtml+=`</div>`;
+
+  // Month total summary
+  const mPmts=PAYMENTS.filter(p=>p.month===activeMonth);
+  const mTotal=mPmts.reduce((s,p)=>s+p.amt,0);
+  const mPaid=mPmts.filter(p=>STATE.paid[p.id]).reduce((s,p)=>s+p.amt,0);
+  const mPending=mTotal-mPaid;
+
+  let summaryHtml=`<div style="margin:0 16px 12px;background:var(--surface2);border-radius:var(--radius);padding:12px 14px;display:flex;justify-content:space-between;align-items:center">
+    <div>
+      <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">${activeMonth}</div>
+      <div style="font-size:18px;font-weight:600;font-family:'DM Mono',monospace">${fmt(mTotal)}</div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:11px;color:var(--green)">Pagado: ${fmt(mPaid)}</div>
+      <div style="font-size:11px;color:${mPending>0?'var(--amber)':'var(--green)'}">Pendiente: ${fmt(mPending)}</div>
+    </div>
+  </div>`;
+
+  // Payment rows for active month
+  let rowsHtml=`<div class="card" style="padding:0 16px">`;
+  mPmts.forEach(p=>{
     const isPaid=STATE.paid[p.id];
     const days=daysUntil(p.date);
     const acumBefore=getAcumAtDate(p.date);
     const paidBefore=PAYMENTS.filter(q=>STATE.paid[q.id]&&q.date<=p.date&&q.id!==p.id).reduce((s,q)=>s+q.amt,0);
     const avail=acumBefore-paidBefore;
-    let statusClass='pill-amber', statusText='Pendiente';
-    if(isPaid){ statusClass='pill-green'; statusText='✓ Pagado'; }
-    else if(avail>=p.amt && avail-p.amt>=50){ statusClass='pill-blue'; statusText=`Sobran ${fmt(avail-p.amt)}`; }
-    else if(avail>=p.amt){ statusClass='pill-green'; statusText='Alcanza justo'; }
-    else { statusClass='pill-red'; statusText=`Faltan ${fmt(p.amt-avail)}`; }
+    let statusColor='var(--amber)', statusText='Pendiente';
+    if(isPaid){ statusColor='var(--green)'; statusText='✓ Pagado'; }
+    else if(avail>=p.amt && avail-p.amt>=50){ statusColor='var(--blue)'; statusText='Sobran '+fmt(avail-p.amt); }
+    else if(avail>=p.amt){ statusColor='var(--green)'; statusText='Alcanza justo'; }
+    else { statusColor='var(--red)'; statusText='Faltan '+fmt(p.amt-avail); }
 
-    html+=`<div class="pmt-item ${isPaid?'paid':''}">
+    const urgentBadge=(!isPaid&&days<=3&&days>=0)?`<span style="background:var(--red-bg);color:var(--red);font-size:10px;padding:2px 7px;border-radius:10px;margin-left:6px">${days===0?'HOY':days+'d'}</span>`:'';
+
+    rowsHtml+=`<div style="display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--border);opacity:${isPaid?'.45':'1'}">
       <button class="check-btn ${isPaid?'checked':''}" onclick="togglePaid('${p.id}')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20,6 9,17 4,12"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"/></svg>
       </button>
-      <div class="pmt-info">
-        <div class="pmt-name">${p.name}</div>
-        <div class="pmt-date">${p.date.slice(8)}/${monthLabel[p.date.slice(5,7)]}${!isPaid&&days<=3&&days>=0?` · <span style="color:var(--red)">en ${days===0?'HOY':days+'d'}</span>`:''}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name}${urgentBadge}</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:2px">${p.date.slice(8)} de ${activeMonth}</div>
+        <div style="font-size:11px;color:${statusColor};margin-top:3px;font-weight:500">${statusText}</div>
       </div>
-      <div class="pmt-right">
-        <div class="pmt-amt">${fmt(p.amt)}</div>
-        <div class="pmt-status"><span class="pill ${statusClass}" style="font-size:10px;padding:3px 7px">${statusText}</span></div>
-      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:16px;font-weight:600;flex-shrink:0">${fmt(p.amt)}</div>
     </div>`;
   });
+  rowsHtml+=`</div>`;
 
-  // Close last card
-  if(PAYMENTS.length) html+='</div>';
-  el.innerHTML=html;
+  el.innerHTML=tabHtml+summaryHtml+rowsHtml;
 }
+
+window.setMonth = (mn) => { activeMonth=mn; renderPagos(); };
 
 // ── AHORRO ──
 function renderAhorro(){
