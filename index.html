@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>MisFinanzas 2026</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -622,7 +623,7 @@ function renderAhorro(){
             onchange="saveSabado('${s}',this.value,this)"
             ${isFuture&&!filled?'style="opacity:.5"':''}>
         </div>
-        ${filled?`<div class="sabado-sug ${diff>=0?'over':'under'}">${diff>=0?'+'+''}${fmt(diff)} vs sugerido</div>`:`<div class="sabado-sug">${sug>0?'Sugerido: '+fmt(sug):''}</div>`}
+        ${filled?(diff>=0?'<div class="sabado-sug over">+'+fmt(diff)+' vs sugerido</div>':('<div class="sabado-sug under">'+fmt(diff)+' vs sugerido</div>')):(sug>0?'<div class="sabado-sug">Sugerido: '+fmt(sug)+'</div>':'')}
       </div>
     </div>`;
   });
