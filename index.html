@@ -168,7 +168,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   .nav{max-width:480px;left:50%;transform:translateX(-50%)}
 }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
 <body>
 
@@ -457,6 +456,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 </div>
 
 <!-- FIREBASE -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getDatabase, ref, set, get, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
@@ -610,11 +610,18 @@ function getAcumAtDate(dateStr){
 function getSugerido(satIndex){
   if(satIndex>=SABADOS.length-1) return 0;
   const nextSat=SABADOS[satIndex+1];
-  const neededByNext=PAYMENTS.filter(p=>p.date<=nextSat).reduce((s,p)=>s+p.amt,0);
+  const allPmts=getAllPayments();
+  // Total needed by next saturday
+  const neededByNext=allPmts.filter(p=>p.date<=nextSat).reduce((s,p)=>s+p.amt,0);
+  // Already paid (deduct from needed)
+  const alreadyPaid=allPmts.filter(p=>STATE.paid[p.id]&&p.date<=nextSat).reduce((s,p)=>s+p.amt,0);
+  // Savings accumulated in previous saturdays (not including this one)
   const prevAccum = satIndex===0 ? 0 : (() => {
     let t=0; SABADOS.slice(0,satIndex).forEach(s=>{ if(STATE.savings[s]) t+=parseFloat(STATE.savings[s]||0); }); return t;
   })();
-  return Math.max(0, neededByNext - prevAccum);
+  // What we still need = total needed - paid - saved so far
+  const stillNeeded = neededByNext - alreadyPaid - prevAccum;
+  return Math.max(0, stillNeeded);
 }
 
 // ── HOME ──
@@ -1101,6 +1108,10 @@ window.calDayClick=(d)=>{/* future: show day detail */}
 // ── CHARTS ──
 let chartMain=null, chartPie=null;
 function renderCharts(){
+  if(typeof Chart === 'undefined'){ 
+    setTimeout(renderCharts, 500); 
+    return; 
+  }
   const allPmts=getAllPayments();
   const months=['Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
   const monthNums={'Marzo':'03','Abril':'04','Mayo':'05','Junio':'06','Julio':'07',
@@ -1155,9 +1166,9 @@ function renderCharts(){
 }
 </script>
 <script>
-if('serviceWorker' in navigator){
+if('serviceWorker' in navigator && location.hostname === 'alexjaradavs.github.io'){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js')
+    navigator.serviceWorker.register('/Mis-Finanzas-2026/sw.js')
       .then(reg => console.log('SW registrado:', reg.scope))
       .catch(err => console.log('SW error:', err));
   });
