@@ -322,9 +322,54 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   </div>
 </div>
 
+<!-- PAGE: CONFIG -->
+<div class="page" id="page-config">
+  <div class="page-header">
+    <h1>Configuración</h1>
+    <p>Edita pagos, montos y fechas</p>
+  </div>
+
+  <div class="divider">Pagos programados</div>
+  <div class="card" style="padding:0 16px">
+    <div id="config-payments-list"></div>
+  </div>
+
+  <div style="padding:0 16px 12px">
+    <div class="extra-form" style="margin-top:12px">
+      <div style="font-size:13px;font-weight:600;color:var(--text2);margin-bottom:12px;text-transform:uppercase;letter-spacing:.06em">Agregar nuevo pago</div>
+      <label>Nombre</label>
+      <input class="extra-input" id="cfg-name" placeholder="Ej. 💳 Plata, 📡 Internet..." style="margin-bottom:10px">
+      <label>Monto ($)</label>
+      <input class="extra-input mono" id="cfg-amt" type="number" placeholder="0.00" style="margin-bottom:10px">
+      <label>Fecha (YYYY-MM-DD)</label>
+      <input class="extra-input mono" id="cfg-date" placeholder="2026-04-16" style="margin-bottom:10px">
+      <label>Mes</label>
+      <select class="extra-input" id="cfg-mes" style="margin-bottom:10px">
+        <option>Marzo</option><option>Abril</option><option>Mayo</option><option>Junio</option>
+        <option>Julio</option><option>Agosto</option><option>Septiembre</option>
+        <option>Octubre</option><option>Noviembre</option><option>Diciembre</option>
+      </select>
+      <label>¿Se repite cada mes?</label>
+      <select class="extra-input" id="cfg-repeat" style="margin-bottom:10px">
+        <option value="no">No, solo ese mes</option>
+        <option value="yes">Sí, todos los meses (mismo día)</option>
+      </select>
+      <button class="btn-add" onclick="addConfigPayment()">+ Agregar pago</button>
+    </div>
+  </div>
+
+  <div class="divider">Editar pago existente</div>
+  <div class="card" style="padding:14px">
+    <div style="font-size:12px;color:var(--text2);line-height:1.6">
+      Toca el lápiz ✏️ en cualquier pago de arriba para editarlo.<br>
+      Los cambios se guardan automáticamente en la nube.
+    </div>
+  </div>
+</div>
+
 <!-- NAVIGATION -->
 <nav class="nav" id="nav">
-  <div class="nav-indicator" id="nav-indicator" style="width:25%;left:0%"></div>
+  <div class="nav-indicator" id="nav-indicator" style="width:20%;left:0%"></div>
   <button class="nav-btn active" onclick="goPage('home',0)" id="nav-home">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
     Inicio
@@ -340,6 +385,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <button class="nav-btn" onclick="goPage('extras',3)" id="nav-extras">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
     Extras
+  </button>
+  <button class="nav-btn" onclick="goPage('config',4)" id="nav-config">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+    Config
   </button>
 </nav>
 
@@ -371,7 +420,7 @@ const dbRef = ref(db, 'finanzas2026');
 const PAYMENTS = [
   {id:'story-mar',   name:'💳 Story',    amt:367.00,  date:'2026-03-12', month:'Marzo'},
   {id:'tenis-q1',    name:'👟 Tenis Q1', amt:199.88,  date:'2026-03-15', month:'Marzo'},
-  {id:'plata-mar',   name:'💳 Plata',    amt:249.00,  date:'2026-03-16', month:'Marzo'},
+  {id:'plata-mar',   name:'💳 Plata',    amt:139.25,  date:'2026-04-16', month:'Abril'},
   {id:'cable-mar',   name:'📡 Cable',    amt:300.00,  date:'2026-03-16', month:'Marzo'},
   {id:'nu-mar',      name:'💳 Nu',       amt:444.22,  date:'2026-03-25', month:'Marzo'},
   {id:'tenis-q2',    name:'👟 Tenis Q2', amt:199.88,  date:'2026-03-31', month:'Marzo'},
@@ -398,6 +447,15 @@ const PAYMENTS = [
   {id:'luz-oct',     name:'💡 Luz',      amt:385.00,  date:'2026-10-16', month:'Octubre'},
   {id:'cable-nov',   name:'📡 Cable',    amt:300.00,  date:'2026-11-16', month:'Noviembre'},
   {id:'cable-dic',   name:'📡 Cable',    amt:300.00,  date:'2026-12-16', month:'Diciembre'},
+  {id:'plata-abr',   name:'💳 Plata',    amt:139.25,  date:'2026-04-16', month:'Abril'},
+  {id:'plata-may',   name:'💳 Plata',    amt:139.25,  date:'2026-05-17', month:'Mayo'},
+  {id:'plata-jun',   name:'💳 Plata',    amt:139.25,  date:'2026-06-17', month:'Junio'},
+  {id:'plata-jul',   name:'💳 Plata',    amt:139.25,  date:'2026-07-17', month:'Julio'},
+  {id:'plata-ago',   name:'💳 Plata',    amt:139.25,  date:'2026-08-17', month:'Agosto'},
+  {id:'plata-sep',   name:'💳 Plata',    amt:139.25,  date:'2026-09-17', month:'Septiembre'},
+  {id:'plata-oct',   name:'💳 Plata',    amt:139.25,  date:'2026-10-17', month:'Octubre'},
+  {id:'plata-nov',   name:'💳 Plata',    amt:139.25,  date:'2026-11-17', month:'Noviembre'},
+  {id:'plata-dic',   name:'💳 Plata',    amt:139.25,  date:'2026-12-17', month:'Diciembre'},
   {id:'netflix-mar', name:'📺 Netflix',  amt:120.00,  date:'2026-03-15', month:'Marzo'},
   {id:'netflix-abr', name:'📺 Netflix',  amt:120.00,  date:'2026-04-15', month:'Abril'},
   {id:'netflix-may', name:'📺 Netflix',  amt:120.00,  date:'2026-05-15', month:'Mayo'},
@@ -426,6 +484,7 @@ const SABADOS = [
 ];
 
 const TOTAL_NEEDED = PAYMENTS.reduce((s,p)=>s+p.amt,0);
+function getDynamicTotal(){ return getAllPayments().reduce((s,p)=>s+p.amt,0); }
 
 // ── Helpers ──
 const fmt = n => '$'+parseFloat(n||0).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -453,6 +512,7 @@ onValue(dbRef, snap => {
   STATE.savings = data.savings || {};
   STATE.paid    = data.paid    || {};
   STATE.extras  = data.extras  || {};
+  STATE.customPayments = data.customPayments || {};
   renderAll();
   document.getElementById('home-loader').style.display='none';
   document.getElementById('home-content').style.display='block';
@@ -464,6 +524,7 @@ function renderAll(){
   renderPagos();
   renderAhorro();
   renderExtras();
+  renderConfig();
 }
 
 // ── Computed helpers ──
@@ -521,7 +582,7 @@ function renderHome(){
   document.getElementById('kpi-mes-sub').textContent=curMonthCap+' pendiente';
 
   // Next payment
-  const upcoming=PAYMENTS.filter(p=>!STATE.paid[p.id]&&p.date>=todayStr).sort((a,b)=>a.date.localeCompare(b.date));
+  const upcoming=getAllPayments().filter(p=>!STATE.paid[p.id]&&p.date>=todayStr).sort((a,b)=>a.date.localeCompare(b.date));
   if(upcoming.length>0){
     const nxt=upcoming[0];
     const days=daysUntil(nxt.date);
@@ -529,7 +590,7 @@ function renderHome(){
     document.getElementById('next-pmt-amt').textContent=fmt(nxt.amt);
     document.getElementById('next-pmt-date').textContent=nxt.date.slice(8)+'/'+monthLabel[nxt.date.slice(5,7)]+(days<=0?' · HOY':`· en ${days}d`);
     const acumBefore=getAcumAtDate(nxt.date);
-    const paidBefore=PAYMENTS.filter(p=>STATE.paid[p.id]&&p.date<=nxt.date).reduce((s,p)=>s+p.amt,0);
+    const paidBefore=getAllPayments().filter(p=>STATE.paid[p.id]&&p.date<=nxt.date).reduce((s,p)=>s+p.amt,0);
     const avail=acumBefore-paidBefore;
     const pct=Math.min(100,Math.max(0,avail/nxt.amt*100));
     document.getElementById('next-prog').style.width=pct+'%';
@@ -538,7 +599,7 @@ function renderHome(){
 
   // Alerts (next 7 days)
   const alertEl=document.getElementById('alerts-list');
-  const urgents=PAYMENTS.filter(p=>!STATE.paid[p.id]&&daysUntil(p.date)<=7&&daysUntil(p.date)>=0);
+  const urgents=getAllPayments().filter(p=>!STATE.paid[p.id]&&daysUntil(p.date)<=7&&daysUntil(p.date)>=0);
   if(urgents.length===0){
     alertEl.innerHTML='<div style="padding:14px 0;color:var(--text3);font-size:13px">Sin pagos urgentes esta semana ✓</div>';
   } else {
@@ -567,15 +628,16 @@ function renderPagos(){
   const el=document.getElementById('pagos-list');
   
   // Get unique months
-  const months=[...new Set(PAYMENTS.map(p=>p.month))];
+  const PAYMENTS_ALL=getAllPayments();
+  const months=[...new Set(PAYMENTS_ALL.map(p=>p.month))];
   if(!activeMonth) activeMonth=months[0];
 
   // Month tab bar
   let tabHtml=`<div style="display:flex;overflow-x:auto;gap:8px;padding:4px 16px 12px;scrollbar-width:none">`;
   months.forEach(mn=>{
-    const total=PAYMENTS.filter(p=>p.month===mn).reduce((s,p)=>s+p.amt,0);
-    const paidCount=PAYMENTS.filter(p=>p.month===mn&&STATE.paid[p.id]).length;
-    const totalCount=PAYMENTS.filter(p=>p.month===mn).length;
+    const total=PAYMENTS_ALL.filter(p=>p.month===mn).reduce((s,p)=>s+p.amt,0);
+    const paidCount=PAYMENTS_ALL.filter(p=>p.month===mn&&STATE.paid[p.id]).length;
+    const totalCount=PAYMENTS_ALL.filter(p=>p.month===mn).length;
     const isActive=mn===activeMonth;
     const allPaid=paidCount===totalCount;
     tabHtml+=`<button onclick="setMonth('${mn}')" style="
@@ -590,7 +652,7 @@ function renderPagos(){
   tabHtml+=`</div>`;
 
   // Month total summary
-  const mPmts=PAYMENTS.filter(p=>p.month===activeMonth);
+  const mPmts=PAYMENTS_ALL.filter(p=>p.month===activeMonth);
   const mTotal=mPmts.reduce((s,p)=>s+p.amt,0);
   const mPaid=mPmts.filter(p=>STATE.paid[p.id]).reduce((s,p)=>s+p.amt,0);
   const mPending=mTotal-mPaid;
@@ -612,7 +674,7 @@ function renderPagos(){
     const isPaid=STATE.paid[p.id];
     const days=daysUntil(p.date);
     const acumBefore=getAcumAtDate(p.date);
-    const paidBefore=PAYMENTS.filter(q=>STATE.paid[q.id]&&q.date<=p.date&&q.id!==p.id).reduce((s,q)=>s+q.amt,0);
+    const paidBefore=PAYMENTS_ALL.filter(q=>STATE.paid[q.id]&&q.date<=p.date&&q.id!==p.id).reduce((s,q)=>s+q.amt,0);
     const avail=acumBefore-paidBefore;
     let statusColor='var(--amber)', statusText='Pendiente';
     if(isPaid){ statusColor='var(--green)'; statusText='✓ Pagado'; }
@@ -746,6 +808,100 @@ window.addExtra = async () => {
   renderExtras(); showToast('Gasto extra guardado','➕');
 };
 
+// ── CONFIG PAYMENTS ──
+// Custom payments stored in Firebase under 'customPayments'
+// They merge with hardcoded PAYMENTS at render time
+
+function getAllPayments(){
+  const custom = Object.values(STATE.customPayments||{});
+  return [...PAYMENTS, ...custom].sort((a,b)=>a.date.localeCompare(b.date));
+}
+
+function renderConfig(){
+  const all = getAllPayments();
+  const months = [...new Set(all.map(p=>p.month))];
+  let html='';
+  months.forEach(mn=>{
+    html+=`<div class="month-sep">${mn}</div>`;
+    all.filter(p=>p.month===mn).forEach(p=>{
+      const isCustom = !!STATE.customPayments?.[p.id];
+      html+=`<div style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border)">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;font-weight:500">${p.name} ${isCustom?'<span style="font-size:10px;background:var(--purple-bg,rgba(167,139,250,.12));color:var(--purple,#a78bfa);padding:2px 6px;border-radius:6px">custom</span>':''}</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:2px">${p.date.slice(8)} de ${mn}</div>
+        </div>
+        <div style="font-family:'DM Mono',monospace;font-size:14px;font-weight:500">${fmt(p.amt)}</div>
+        <button onclick="editPayment('${p.id}','${p.name}',${p.amt},'${p.date}','${p.month}')" 
+          style="background:none;border:1px solid var(--border2);border-radius:6px;padding:5px 8px;color:var(--text2);cursor:pointer;font-size:12px">✏️</button>
+        ${isCustom?`<button onclick="deleteCustomPayment('${p.id}')" style="background:none;border:1px solid var(--border2);border-radius:6px;padding:5px 8px;color:var(--red);cursor:pointer;font-size:12px">×</button>`:''}
+      </div>`;
+    });
+  });
+  document.getElementById('config-payments-list').innerHTML=html||'<div style="padding:14px 0;color:var(--text3);font-size:13px">Sin pagos</div>';
+}
+
+window.addConfigPayment = async () => {
+  const name=document.getElementById('cfg-name').value.trim();
+  const amt=parseFloat(document.getElementById('cfg-amt').value)||0;
+  const date=document.getElementById('cfg-date').value.trim();
+  const mes=document.getElementById('cfg-mes').value;
+  const repeat=document.getElementById('cfg-repeat').value;
+  if(!name||amt<=0||!date.match(/\d{4}-\d{2}-\d{2}/)){
+    showToast('Completa todos los campos correctamente','⚠️'); return;
+  }
+  const toAdd=[];
+  if(repeat==='yes'){
+    // Add for all remaining months from selected month
+    const months=['Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    const startIdx=months.indexOf(mes);
+    const day=date.slice(8);
+    const monthNums={'Marzo':'03','Abril':'04','Mayo':'05','Junio':'06','Julio':'07',
+      'Agosto':'08','Septiembre':'09','Octubre':'10','Noviembre':'11','Diciembre':'12'};
+    months.slice(startIdx).forEach(m=>{
+      const id='custom-'+name.replace(/\s/g,'')+'-'+m+'-'+Date.now();
+      toAdd.push({id,name,amt,date:`2026-${monthNums[m]}-${day}`,month:m,ts:Date.now()});
+    });
+  } else {
+    const id='custom-'+Date.now();
+    toAdd.push({id,name,amt,date,month:mes,ts:Date.now()});
+  }
+  for(const p of toAdd){
+    STATE.customPayments=STATE.customPayments||{};
+    STATE.customPayments[p.id]=p;
+    await update(dbRef,{[`customPayments/${p.id}`]:p});
+  }
+  document.getElementById('cfg-name').value='';
+  document.getElementById('cfg-amt').value='';
+  document.getElementById('cfg-date').value='';
+  renderConfig(); renderPagos(); renderHome();
+  showToast(`${toAdd.length} pago(s) agregado(s)`,'✓');
+};
+
+window.editPayment = (id,name,amt,date,month) => {
+  document.getElementById('cfg-name').value=name;
+  document.getElementById('cfg-amt').value=amt;
+  document.getElementById('cfg-date').value=date;
+  // Set month select
+  const sel=document.getElementById('cfg-mes');
+  for(let i=0;i<sel.options.length;i++){
+    if(sel.options[i].value===month){sel.selectedIndex=i;break;}
+  }
+  // If custom, delete old and let user re-add with new values
+  if(STATE.customPayments?.[id]){
+    deleteCustomPayment(id,false);
+    showToast('Edita los valores y guarda de nuevo','✏️');
+  } else {
+    showToast('Este es un pago fijo — agrega uno nuevo para sobrescribirlo','ℹ️');
+  }
+};
+
+window.deleteCustomPayment = async (id,notify=true) => {
+  delete STATE.customPayments?.[id];
+  await set(ref(db,`finanzas2026/customPayments/${id}`),null);
+  renderConfig(); renderPagos(); renderHome();
+  if(notify) showToast('Pago eliminado','×');
+};
+
 window.deleteExtra = async (id) => {
   delete STATE.extras[id];
   await set(ref(db,`finanzas2026/extras/${id}`),null);
@@ -761,8 +917,8 @@ function goPage(name,idx){
   document.getElementById('page-'+name).classList.add('active');
   document.getElementById('nav-'+name).classList.add('active');
   const ind=document.getElementById('nav-indicator');
-  ind.style.width='25%';
-  ind.style.left=(idx*25)+'%';
+  ind.style.width='20%';
+  ind.style.left=(idx*20)+'%';
 }
 </script>
 <script>
