@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>MisFinanzas 2026</title>
+<meta name="theme-color" content="#1a1d27">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MisFinanzas">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231a1d27'/><text y='.9em' font-size='70' x='15'>💰</text></svg>">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -366,32 +372,42 @@ const PAYMENTS = [
   {id:'story-mar',   name:'💳 Story',    amt:367.00,  date:'2026-03-12', month:'Marzo'},
   {id:'tenis-q1',    name:'👟 Tenis Q1', amt:199.88,  date:'2026-03-15', month:'Marzo'},
   {id:'plata-mar',   name:'💳 Plata',    amt:249.00,  date:'2026-03-16', month:'Marzo'},
-  {id:'cable-mar',   name:'📡 Cable',    amt:250.00,  date:'2026-03-16', month:'Marzo'},
+  {id:'cable-mar',   name:'📡 Cable',    amt:300.00,  date:'2026-03-16', month:'Marzo'},
   {id:'nu-mar',      name:'💳 Nu',       amt:444.22,  date:'2026-03-25', month:'Marzo'},
   {id:'tenis-q2',    name:'👟 Tenis Q2', amt:199.88,  date:'2026-03-31', month:'Marzo'},
   {id:'tenis-q3',    name:'👟 Tenis Q3', amt:199.88,  date:'2026-04-15', month:'Abril'},
-  {id:'cable-abr',   name:'📡 Cable',    amt:250.00,  date:'2026-04-16', month:'Abril'},
+  {id:'cable-abr',   name:'📡 Cable',    amt:300.00,  date:'2026-04-16', month:'Abril'},
   {id:'luz-abr',     name:'💡 Luz',      amt:385.00,  date:'2026-04-16', month:'Abril'},
   {id:'nu-abr',      name:'💳 Nu',       amt:415.54,  date:'2026-04-25', month:'Abril'},
   {id:'tenis-q4',    name:'👟 Tenis Q4', amt:199.88,  date:'2026-04-30', month:'Abril'},
   {id:'tenis-q5',    name:'👟 Tenis Q5', amt:199.88,  date:'2026-05-15', month:'Mayo'},
-  {id:'cable-may',   name:'📡 Cable',    amt:250.00,  date:'2026-05-16', month:'Mayo'},
+  {id:'cable-may',   name:'📡 Cable',    amt:300.00,  date:'2026-05-16', month:'Mayo'},
   {id:'nu-may',      name:'💳 Nu',       amt:303.02,  date:'2026-05-25', month:'Mayo'},
   {id:'tenis-q6',    name:'👟 Tenis Q6', amt:199.88,  date:'2026-05-31', month:'Mayo'},
   {id:'tenis-q7',    name:'👟 Tenis Q7', amt:199.88,  date:'2026-06-15', month:'Junio'},
-  {id:'cable-jun',   name:'📡 Cable',    amt:250.00,  date:'2026-06-16', month:'Junio'},
+  {id:'cable-jun',   name:'📡 Cable',    amt:300.00,  date:'2026-06-16', month:'Junio'},
   {id:'luz-jun',     name:'💡 Luz',      amt:385.00,  date:'2026-06-16', month:'Junio'},
   {id:'nu-jun',      name:'💳 Nu',       amt:303.03,  date:'2026-06-25', month:'Junio'},
   {id:'tenis-q8',    name:'👟 Tenis Q8', amt:199.88,  date:'2026-06-30', month:'Junio'},
-  {id:'cable-jul',   name:'📡 Cable',    amt:250.00,  date:'2026-07-16', month:'Julio'},
+  {id:'cable-jul',   name:'📡 Cable',    amt:300.00,  date:'2026-07-16', month:'Julio'},
   {id:'nu-jul',      name:'💳 Nu',       amt:87.57,   date:'2026-07-25', month:'Julio'},
-  {id:'cable-ago',   name:'📡 Cable',    amt:250.00,  date:'2026-08-16', month:'Agosto'},
+  {id:'cable-ago',   name:'📡 Cable',    amt:300.00,  date:'2026-08-16', month:'Agosto'},
   {id:'luz-ago',     name:'💡 Luz',      amt:385.00,  date:'2026-08-16', month:'Agosto'},
-  {id:'cable-sep',   name:'📡 Cable',    amt:250.00,  date:'2026-09-16', month:'Septiembre'},
-  {id:'cable-oct',   name:'📡 Cable',    amt:250.00,  date:'2026-10-16', month:'Octubre'},
+  {id:'cable-sep',   name:'📡 Cable',    amt:300.00,  date:'2026-09-16', month:'Septiembre'},
+  {id:'cable-oct',   name:'📡 Cable',    amt:300.00,  date:'2026-10-16', month:'Octubre'},
   {id:'luz-oct',     name:'💡 Luz',      amt:385.00,  date:'2026-10-16', month:'Octubre'},
-  {id:'cable-nov',   name:'📡 Cable',    amt:250.00,  date:'2026-11-16', month:'Noviembre'},
-  {id:'cable-dic',   name:'📡 Cable',    amt:250.00,  date:'2026-12-16', month:'Diciembre'},
+  {id:'cable-nov',   name:'📡 Cable',    amt:300.00,  date:'2026-11-16', month:'Noviembre'},
+  {id:'cable-dic',   name:'📡 Cable',    amt:300.00,  date:'2026-12-16', month:'Diciembre'},
+  {id:'netflix-mar', name:'📺 Netflix',  amt:120.00,  date:'2026-03-15', month:'Marzo'},
+  {id:'netflix-abr', name:'📺 Netflix',  amt:120.00,  date:'2026-04-15', month:'Abril'},
+  {id:'netflix-may', name:'📺 Netflix',  amt:120.00,  date:'2026-05-15', month:'Mayo'},
+  {id:'netflix-jun', name:'📺 Netflix',  amt:120.00,  date:'2026-06-15', month:'Junio'},
+  {id:'netflix-jul', name:'📺 Netflix',  amt:120.00,  date:'2026-07-15', month:'Julio'},
+  {id:'netflix-ago', name:'📺 Netflix',  amt:120.00,  date:'2026-08-15', month:'Agosto'},
+  {id:'netflix-sep', name:'📺 Netflix',  amt:120.00,  date:'2026-09-15', month:'Septiembre'},
+  {id:'netflix-oct', name:'📺 Netflix',  amt:120.00,  date:'2026-10-15', month:'Octubre'},
+  {id:'netflix-nov', name:'📺 Netflix',  amt:120.00,  date:'2026-11-15', month:'Noviembre'},
+  {id:'netflix-dic', name:'📺 Netflix',  amt:120.00,  date:'2026-12-15', month:'Diciembre'},
   {id:'luz-dic',     name:'💡 Luz',      amt:385.00,  date:'2026-12-16', month:'Diciembre'},
 ];
 
@@ -747,6 +763,15 @@ function goPage(name,idx){
   const ind=document.getElementById('nav-indicator');
   ind.style.width='25%';
   ind.style.left=(idx*25)+'%';
+}
+</script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => console.log('SW registrado:', reg.scope))
+      .catch(err => console.log('SW error:', err));
+  });
 }
 </script>
 </body>
