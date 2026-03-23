@@ -408,10 +408,14 @@ function getSugerido(satIndex){
   if(satIndex>=SABADOS.length-1) return 0;
   const nextSat = SABADOS[satIndex+1];
   const allPmts = getAllPayments();
-  const neededByNext = allPmts.filter(p=>p.date<=nextSat).reduce((s,p)=>s+p.amt,0);
-  const alreadyPaid = allPmts.filter(p=>STATE.paid[p.id]&&p.date<=nextSat).reduce((s,p)=>s+p.amt,0);
-  const prevAccum = SABADOS.slice(0,satIndex).reduce((t,s)=>t+(STATE.savings[s]?parseFloat(STATE.savings[s]):0),0);
-  return Math.max(0, neededByNext - alreadyPaid - prevAccum);
+  // Current running balance = all savings so far - all paid so far
+  const savingsSoFar = SABADOS.slice(0,satIndex).reduce((t,s)=>t+(STATE.savings[s]?parseFloat(STATE.savings[s]):0),0);
+  const paidSoFar = allPmts.filter(p=>STATE.paid[p.id]).reduce((s,p)=>s+p.amt,0);
+  const currentBalance = savingsSoFar - paidSoFar;
+  // Unpaid payments due on or before next saturday (includes overdue unpaid ones)
+  const unpaidByNext = allPmts.filter(p=>!STATE.paid[p.id]&&p.date<=nextSat).reduce((s,p)=>s+p.amt,0);
+  // How much to save this saturday to cover all pending by next saturday
+  return Math.max(0, unpaidByNext - currentBalance);
 }
 
 onValue(dbRef, snap => {
