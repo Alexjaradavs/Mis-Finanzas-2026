@@ -421,7 +421,7 @@ const PAYMENTS = [
   {id:'tenis-q3',    name:'Tenis Q3',       amt:199.88,  date:'2026-04-15', month:'Abril'},
   {id:'netflix-abr', name:'Netflix',        amt:120.00,  date:'2026-04-15', month:'Abril'},
   {id:'cable-abr',   name:'Cable',          amt:300.00,  date:'2026-04-16', month:'Abril'},
-  {id:'luz-abr',     name:'Luz',            amt:385.00,  date:'2026-04-16', month:'Abril'},
+  {id:'luz-abr',     name:'Luz',            amt:385.00,  date:'2026-04-23', month:'Abril'},
   {id:'nu-abr',      name:'Nu',             amt:415.54,  date:'2026-04-25', month:'Abril'},
   {id:'tenis-q4',    name:'Tenis Q4',       amt:199.88,  date:'2026-04-30', month:'Abril'},
   {id:'tenis-q5',    name:'Tenis Q5',       amt:199.88,  date:'2026-05-15', month:'Mayo'},
@@ -433,7 +433,7 @@ const PAYMENTS = [
   {id:'tenis-q7',    name:'Tenis Q7',       amt:199.88,  date:'2026-06-15', month:'Junio'},
   {id:'netflix-jun', name:'Netflix',        amt:120.00,  date:'2026-06-15', month:'Junio'},
   {id:'cable-jun',   name:'Cable',          amt:300.00,  date:'2026-06-16', month:'Junio'},
-  {id:'luz-jun',     name:'Luz',            amt:385.00,  date:'2026-06-16', month:'Junio'},
+  {id:'luz-jun',     name:'Luz',            amt:385.00,  date:'2026-06-23', month:'Junio'},
   {id:'plata-jun',   name:'Plata',          amt:139.25,  date:'2026-06-17', month:'Junio'},
   {id:'nu-jun',      name:'Nu',             amt:303.03,  date:'2026-06-25', month:'Junio'},
   {id:'tenis-q8',    name:'Tenis Q8',       amt:199.88,  date:'2026-06-30', month:'Junio'},
@@ -443,21 +443,21 @@ const PAYMENTS = [
   {id:'nu-jul',      name:'Nu',             amt:87.57,   date:'2026-07-25', month:'Julio'},
   {id:'cable-ago',   name:'Cable',          amt:300.00,  date:'2026-08-16', month:'Agosto'},
   {id:'netflix-ago', name:'Netflix',        amt:120.00,  date:'2026-08-15', month:'Agosto'},
-  {id:'luz-ago',     name:'Luz',            amt:385.00,  date:'2026-08-16', month:'Agosto'},
+  {id:'luz-ago',     name:'Luz',            amt:385.00,  date:'2026-08-23', month:'Agosto'},
   {id:'plata-ago',   name:'Plata',          amt:139.25,  date:'2026-08-17', month:'Agosto'},
   {id:'cable-sep',   name:'Cable',          amt:300.00,  date:'2026-09-16', month:'Septiembre'},
   {id:'netflix-sep', name:'Netflix',        amt:120.00,  date:'2026-09-15', month:'Septiembre'},
   {id:'plata-sep',   name:'Plata',          amt:139.25,  date:'2026-09-17', month:'Septiembre'},
   {id:'cable-oct',   name:'Cable',          amt:300.00,  date:'2026-10-16', month:'Octubre'},
   {id:'netflix-oct', name:'Netflix',        amt:120.00,  date:'2026-10-15', month:'Octubre'},
-  {id:'luz-oct',     name:'Luz',            amt:385.00,  date:'2026-10-16', month:'Octubre'},
+  {id:'luz-oct',     name:'Luz',            amt:385.00,  date:'2026-10-23', month:'Octubre'},
   {id:'plata-oct',   name:'Plata',          amt:139.25,  date:'2026-10-17', month:'Octubre'},
   {id:'cable-nov',   name:'Cable',          amt:300.00,  date:'2026-11-16', month:'Noviembre'},
   {id:'netflix-nov', name:'Netflix',        amt:120.00,  date:'2026-11-15', month:'Noviembre'},
   {id:'plata-nov',   name:'Plata',          amt:139.25,  date:'2026-11-17', month:'Noviembre'},
   {id:'cable-dic',   name:'Cable',          amt:300.00,  date:'2026-12-16', month:'Diciembre'},
   {id:'netflix-dic', name:'Netflix',        amt:120.00,  date:'2026-12-15', month:'Diciembre'},
-  {id:'luz-dic',     name:'Luz',            amt:385.00,  date:'2026-12-16', month:'Diciembre'},
+  {id:'luz-dic',     name:'Luz',            amt:385.00,  date:'2026-12-23', month:'Diciembre'},
   {id:'plata-dic',   name:'Plata',          amt:139.25,  date:'2026-12-17', month:'Diciembre'},
 ];
 
@@ -493,6 +493,10 @@ const daysUntil = d => Math.ceil((new Date(d+'T12:00:00')-new Date())/86400000);
 
 let STATE = { savings:{}, paid:{}, extras:{}, customPayments:{} };
 let activeMonth = null;
+function getCurrentMonthName(){
+  return ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+    'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'][new Date().getMonth()];
+}
 let calMonth = 2;
 let calYear = 2026;
 
@@ -603,8 +607,9 @@ function renderHome(){
   document.getElementById('kpi-spent').textContent=fmt(paidAmt);
   document.getElementById('kpi-libre').style.color=libre>=0?'var(--green)':'var(--red)';
   document.getElementById('kpi-libre').textContent=fmt(libre);
-  const curMonthName=new Date().toLocaleString('es-MX',{month:'long'});
-  const cur=curMonthName.charAt(0).toUpperCase()+curMonthName.slice(1);
+  const allMN2=['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+    'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const cur=allMN2[new Date().getMonth()];
   const mesAmt=getAllPayments().filter(p=>p.month===cur&&!STATE.paid[p.id]).reduce((s,p)=>s+p.amt,0);
   document.getElementById('kpi-mes').textContent=fmt(mesAmt);
   document.getElementById('kpi-mes-sub').textContent=cur+' pendiente';
@@ -640,9 +645,24 @@ function renderPagos(){
   const el=document.getElementById('pagos-list');
   const PAYMENTS_ALL=getAllPayments();
   const months=[...new Set(PAYMENTS_ALL.map(p=>p.month))];
-  if(!activeMonth) activeMonth=months[0];
+  // Default to current month, filter months to show from current onwards
+  const allMNames=['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+    'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const curMnIdx=new Date().getMonth();
+  // Keep past months if they have unpaid items, hide if all paid
+  const filteredMonths=months.filter(mn=>{
+    const idx=allMNames.indexOf(mn);
+    if(idx>=curMnIdx) return true; // always show current+future
+    // Show past month only if has unpaid items
+    return PAYMENTS_ALL.filter(p=>p.month===mn&&!STATE.paid[p.id]).length>0;
+  });
+  if(!activeMonth || !filteredMonths.includes(activeMonth)){
+    const curMn=allMNames[curMnIdx];
+    activeMonth=filteredMonths.includes(curMn)?curMn:filteredMonths[0];
+  }
+  // use filteredMonths as months
   let tabHtml='<div style="display:flex;overflow-x:auto;gap:8px;padding:4px 16px 12px;scrollbar-width:none">';
-  months.forEach(mn=>{
+  filteredMonths.forEach(mn=>{
     const paidC=PAYMENTS_ALL.filter(p=>p.month===mn&&STATE.paid[p.id]).length;
     const totalC=PAYMENTS_ALL.filter(p=>p.month===mn).length;
     const isActive=mn===activeMonth;
@@ -653,6 +673,7 @@ function renderPagos(){
       '<span>'+mn+'</span><span style="font-size:10px;opacity:.8">'+(paidC===totalC&&totalC>0?'listo':paidC+'/'+totalC)+'</span></button>';
   });
   tabHtml+='</div>';
+  // For summary and rows, use full PAYMENTS_ALL (activeMonth is already current+)
   const mPmts=PAYMENTS_ALL.filter(p=>p.month===activeMonth);
   const mTotal=mPmts.reduce((s,p)=>s+p.amt,0);
   const mPaid=mPmts.filter(p=>STATE.paid[p.id]).reduce((s,p)=>s+p.amt,0);
@@ -748,16 +769,21 @@ function renderAhorro(){
     const sabCard = document.querySelector('#page-ahorro .card:last-of-type');
   }
   document.getElementById('dist-cards').innerHTML = distHtml;
-  let html=''; let curMon='';
+  const todayStr2=today();
+  let html=''; let curMon=''; let shownPastHeader=false;
   SABADOS.forEach((s,i)=>{
     const mn=MN[s.slice(5,7)];
     const monthFull=MONTH_NAMES[parseInt(s.slice(5,7))-1];
-    if(mn!==curMon){curMon=mn;if(i>0)html+='</div>';html+='<div class="month-sep">'+monthFull+'</div><div>';}
+    const isPast=s<todayStr2;
     const val=STATE.savings[s]||'';
-    const sug=getSugerido(i);
     const filled=val!=='';
+    // Skip past saturdays with no savings recorded
+    if(isPast && !filled) return;
+    if(mn!==curMon){curMon=mn;if(i>0&&html.length>0)html+='</div>';html+='<div class="month-sep">'+monthFull+'</div><div>';}
+    const sug=getSugerido(i);
     const diff=filled?parseFloat(val)-sug:null;
-    html+='<div class="sabado-row">'+
+    const opacity=isPast?'0.6':'1';
+    html+='<div class="sabado-row" style="opacity:'+opacity+'">'+
       '<div style="flex:1"><div style="font-size:14px;font-weight:500">'+s.slice(8)+' de '+mn+'</div>'+
       '<div style="font-size:11px;color:var(--text3);margin-top:2px">'+(sug>0?'Sugerido: '+fmt(sug):'')+'</div></div>'+
       '<div><div style="display:flex;align-items:center;gap:6px">'+
