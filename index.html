@@ -249,6 +249,112 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   </div>
 </div>
 
+<!-- MOVIMIENTOS -->
+<div class="page" id="page-movimientos">
+  <div class="page-header"><h1>Movimientos</h1><p>Registra gastos y compras a meses en tus tarjetas</p></div>
+
+  <!-- Form -->
+  <div style="padding:0 16px 12px">
+    <div style="background:var(--surface2);border-radius:var(--radius);padding:16px;margin-bottom:12px">
+
+      <!-- Tipo de movimiento -->
+      <div style="display:flex;gap:8px;margin-bottom:14px">
+        <button id="tipo-normal" onclick="setTipo('normal')"
+          style="flex:1;padding:10px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;
+                 font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;
+                 background:var(--accent);border:none;color:#fff">
+          💳 Gasto normal
+        </button>
+        <button id="tipo-meses" onclick="setTipo('meses')"
+          style="flex:1;padding:10px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;
+                 font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;
+                 background:var(--surface);border:1.5px solid var(--border2);color:var(--text2)">
+          📅 A meses
+        </button>
+      </div>
+
+      <!-- Tarjeta -->
+      <div style="margin-bottom:12px">
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Tarjeta</div>
+        <select id="mov-tarjeta" class="extra-input" style="background:var(--surface);border:1.5px solid var(--border2)">
+          <option value="plata">💳 Plata</option>
+          <option value="story">💳 Story</option>
+          <option value="nu">💳 Nu</option>
+        </select>
+      </div>
+
+      <!-- Descripción -->
+      <div style="margin-bottom:12px">
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Descripción</div>
+        <input id="mov-desc" class="extra-input" placeholder="Ej. Supermercado, Ropa, Amazon..." style="background:var(--surface);border:1.5px solid var(--border2)">
+      </div>
+
+      <!-- Monto -->
+      <div style="margin-bottom:12px">
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Monto total ($)</div>
+        <input id="mov-monto" type="number" class="extra-input" placeholder="0.00" oninput="calcMensualidad()"
+          style="background:var(--surface);border:1.5px solid var(--border2);font-family:'DM Mono',monospace">
+      </div>
+
+      <!-- Campos solo para meses -->
+      <div id="mov-meses-fields" style="display:none">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+          <div>
+            <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Número de meses</div>
+            <select id="mov-plazos" class="extra-input" oninput="calcMensualidad()"
+              style="background:var(--surface);border:1.5px solid var(--border2)">
+              <option value="3">3 meses</option>
+              <option value="6" selected>6 meses</option>
+              <option value="9">9 meses</option>
+              <option value="12">12 meses</option>
+              <option value="18">18 meses</option>
+              <option value="24">24 meses</option>
+            </select>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">¿Con intereses?</div>
+            <select id="mov-interes" class="extra-input" oninput="calcMensualidad()"
+              style="background:var(--surface);border:1.5px solid var(--border2)">
+              <option value="0">Sin intereses (0%)</option>
+              <option value="10">10% anual</option>
+              <option value="20">20% anual</option>
+              <option value="30">30% anual</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-bottom:12px">
+          <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Mes que inicia el cobro</div>
+          <select id="mov-mes-inicio" class="extra-input" style="background:var(--surface);border:1.5px solid var(--border2)">
+            <option>Marzo</option><option>Abril</option><option>Mayo</option><option>Junio</option>
+            <option>Julio</option><option>Agosto</option><option>Septiembre</option>
+            <option>Octubre</option><option>Noviembre</option><option>Diciembre</option>
+          </select>
+        </div>
+        <!-- Preview mensualidad -->
+        <div id="mov-preview" style="display:none;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.3);border-radius:8px;padding:12px;margin-bottom:12px">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:4px">Mensualidad calculada</div>
+          <div style="font-size:20px;font-weight:600;font-family:'DM Mono',monospace;color:var(--accent2)" id="mov-mensualidad-val">$0.00</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:4px" id="mov-preview-detalle"></div>
+        </div>
+      </div>
+
+      <button class="btn-add" onclick="guardarMovimiento()" style="margin-top:4px">
+        + Registrar movimiento
+      </button>
+    </div>
+  </div>
+
+  <!-- Resumen de saldos -->
+  <div class="divider">Saldos actuales</div>
+  <div class="card" style="padding:4px 16px"><div id="mov-saldos-list"></div></div>
+
+  <!-- Historial -->
+  <div class="divider">Historial de movimientos</div>
+  <div class="card" style="padding:4px 16px">
+    <div id="mov-historial"><div style="padding:14px 0;color:var(--text3);font-size:13px">Sin movimientos registrados</div></div>
+  </div>
+</div>
+
 <!-- HAMBURGER -->
 <button class="hamburger" id="hamburger" onclick="toggleMenu()">
   <span></span><span></span><span></span>
@@ -275,6 +381,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   </div>
   <div class="menu-item" id="menu-graficas" onclick="goPage('graficas');closeMenu()">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>Graficas
+  </div>
+  <div class="menu-item" id="menu-movimientos" onclick="goPage('movimientos');closeMenu()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/><line x1="6" y1="15" x2="10" y2="15"/></svg>Movimientos
   </div>
   <div class="menu-divider"></div>
   <div class="menu-section">Ajustes</div>
@@ -462,6 +571,13 @@ onValue(dbRef, snap => {
   STATE.paid = data.paid || {};
   STATE.extras = data.extras || {};
   STATE.customPayments = data.customPayments || {};
+  STATE.movimientos = data.movimientos || {};
+  // Card balances - start with defaults, override with saved
+  STATE.cards = data.cards || {
+    plata: {nombre:'Plata', limite:1000, saldo:648.56, tasa:119.9, corte:17, pago:139.25, emoji:'💳'},
+    story: {nombre:'Story', limite:6000, saldo:734.00, tasa:129.9, corte:12, pago:367.00, emoji:'💳'},
+    nu:    {nombre:'Nu',    limite:2000, saldo:1553.33, tasa:99.9,  corte:25, pago:444.22, emoji:'💳'},
+  };
   renderAll();
   document.getElementById('home-loader').style.display='none';
   document.getElementById('home-content').style.display='block';
@@ -471,6 +587,7 @@ function renderAll(){
   renderHome(); renderPagos(); renderAhorro(); renderExtras(); renderConfig();
   if(document.getElementById('page-calendario').classList.contains('active')) renderCalendar();
   if(document.getElementById('page-graficas').classList.contains('active')) renderCharts();
+  if(document.getElementById('page-movimientos').classList.contains('active')) renderMovimientos();
 }
 
 function renderHome(){
@@ -803,6 +920,196 @@ function renderCharts(){
     '<span style="font-family:\'DM Mono\',monospace;font-size:15px;font-weight:600;color:'+(tA>=tG?'var(--green)':'var(--red)')+'">'+fmt(tA-tG)+'</span></div>';
 }
 
+// ── MOVIMIENTOS ──
+let tipoMov = 'normal';
+
+window.setTipo = (tipo) => {
+  tipoMov = tipo;
+  const btnN = document.getElementById('tipo-normal');
+  const btnM = document.getElementById('tipo-meses');
+  const campos = document.getElementById('mov-meses-fields');
+  if(tipo === 'normal'){
+    btnN.style.background='var(--accent)'; btnN.style.color='#fff'; btnN.style.border='none';
+    btnM.style.background='var(--surface)'; btnM.style.color='var(--text2)'; btnM.style.border='1.5px solid var(--border2)';
+    campos.style.display='none';
+  } else {
+    btnM.style.background='var(--accent)'; btnM.style.color='#fff'; btnM.style.border='none';
+    btnN.style.background='var(--surface)'; btnN.style.color='var(--text2)'; btnN.style.border='1.5px solid var(--border2)';
+    campos.style.display='block';
+    calcMensualidad();
+  }
+};
+
+window.calcMensualidad = () => {
+  const monto = parseFloat(document.getElementById('mov-monto').value)||0;
+  const plazos = parseInt(document.getElementById('mov-plazos').value)||6;
+  const tasa = parseFloat(document.getElementById('mov-interes').value)||0;
+  const preview = document.getElementById('mov-preview');
+  const valEl = document.getElementById('mov-mensualidad-val');
+  const detEl = document.getElementById('mov-preview-detalle');
+  if(monto <= 0){ preview.style.display='none'; return; }
+  let mensualidad;
+  if(tasa === 0){
+    mensualidad = monto / plazos;
+  } else {
+    const r = (tasa/100)/12;
+    mensualidad = monto * r * Math.pow(1+r,plazos) / (Math.pow(1+r,plazos)-1);
+  }
+  preview.style.display='block';
+  valEl.textContent = fmt(mensualidad);
+  detEl.textContent = plazos+' pagos de '+fmt(mensualidad)+(tasa>0?' ('+tasa+'% anual)':' sin intereses')+' · Total: '+fmt(mensualidad*plazos);
+};
+
+window.guardarMovimiento = async () => {
+  const tarjeta = document.getElementById('mov-tarjeta').value;
+  const desc = document.getElementById('mov-desc').value.trim();
+  const monto = parseFloat(document.getElementById('mov-monto').value)||0;
+  if(!desc || monto <= 0){ showToast('Completa descripción y monto','⚠️'); return; }
+
+  const id = 'mov-'+Date.now();
+  const mov = { id, tarjeta, desc, monto, tipo: tipoMov, ts: Date.now() };
+
+  if(tipoMov === 'meses'){
+    const plazos = parseInt(document.getElementById('mov-plazos').value)||6;
+    const tasa = parseFloat(document.getElementById('mov-interes').value)||0;
+    const mesInicio = document.getElementById('mov-mes-inicio').value;
+    let mensualidad;
+    if(tasa === 0){ mensualidad = monto/plazos; }
+    else{ const r=(tasa/100)/12; mensualidad=monto*r*Math.pow(1+r,plazos)/(Math.pow(1+r,plazos)-1); }
+    mensualidad = Math.round(mensualidad*100)/100;
+    mov.plazos = plazos; mov.tasa = tasa; mov.mensualidad = mensualidad; mov.mesInicio = mesInicio;
+
+    // Add custom payments for each month
+    const allMonths = ['Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    const monthNums = {'Marzo':'03','Abril':'04','Mayo':'05','Junio':'06','Julio':'07',
+      'Agosto':'08','Septiembre':'09','Octubre':'10','Noviembre':'11','Diciembre':'12'};
+    const startIdx = allMonths.indexOf(mesInicio);
+    // Get corte day for this card
+    const cardData = STATE.cards[tarjeta];
+    const diaCorte = cardData ? cardData.corte : 16;
+
+    for(let i=0; i<plazos && (startIdx+i)<allMonths.length; i++){
+      const mn = allMonths[startIdx+i];
+      const pmtId = 'mov-'+id+'-'+i;
+      const pmtDate = '2026-'+monthNums[mn]+'-'+String(diaCorte).padStart(2,'0');
+      const emoji = STATE.cards[tarjeta]?.emoji || '💳';
+      const pmtName = emoji+' '+STATE.cards[tarjeta]?.nombre+' ('+desc+')';
+      const pmt = {id:pmtId, name:pmtName, amt:mensualidad, date:pmtDate, month:mn, ts:Date.now()};
+      pmt.display = pmtName;
+      STATE.customPayments = STATE.customPayments||{};
+      STATE.customPayments[pmtId] = pmt;
+      await update(dbRef,{['customPayments/'+pmtId]:pmt});
+    }
+    // Update card saldo
+    if(STATE.cards[tarjeta]){
+      STATE.cards[tarjeta].saldo = (STATE.cards[tarjeta].saldo||0) + monto;
+      await update(dbRef,{['cards/'+tarjeta+'/saldo']:STATE.cards[tarjeta].saldo});
+    }
+  } else {
+    // Normal purchase - update saldo and pago
+    if(STATE.cards[tarjeta]){
+      STATE.cards[tarjeta].saldo = (STATE.cards[tarjeta].saldo||0) + monto;
+      // Rough pago minimo recalc: ~10% of new balance or $150 min
+      const newPago = Math.max(150, Math.round(STATE.cards[tarjeta].saldo * 0.10 * 100)/100);
+      STATE.cards[tarjeta].pago = newPago;
+      await update(dbRef,{
+        ['cards/'+tarjeta+'/saldo']:STATE.cards[tarjeta].saldo,
+        ['cards/'+tarjeta+'/pago']:newPago
+      });
+    }
+  }
+
+  STATE.movimientos[id] = mov;
+  await update(dbRef,{['movimientos/'+id]:mov});
+
+  // Clear form
+  document.getElementById('mov-desc').value='';
+  document.getElementById('mov-monto').value='';
+  document.getElementById('mov-preview').style.display='none';
+
+  renderMovimientos(); renderPagos(); renderHome(); renderConfig();
+  celebrate('💳');
+  showToast(tipoMov==='meses'?'Mensualidades agregadas':'Gasto registrado','💳');
+};
+
+function renderMovimientos(){
+  // Saldos card
+  const saldosEl = document.getElementById('mov-saldos-list');
+  if(saldosEl && STATE.cards){
+    saldosEl.innerHTML = Object.values(STATE.cards).map(c=>{
+      const util = Math.round(c.saldo/c.limite*100);
+      const utilColor = util>80?'var(--red)':util>50?'var(--amber)':'var(--green)';
+      return '<div style="padding:14px 0;border-bottom:1px solid var(--border)">'+
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'+
+        '<div style="font-size:14px;font-weight:500">'+c.emoji+' '+c.nombre+'</div>'+
+        '<div style="font-size:12px;color:'+utilColor+';font-weight:600">'+util+'% usado</div></div>'+
+        '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">'+
+        '<div style="text-align:center"><div style="font-size:10px;color:var(--text3)">Saldo</div>'+
+        '<div style="font-size:13px;font-weight:600;color:var(--red);font-family:monospace">'+fmt(c.saldo)+'</div></div>'+
+        '<div style="text-align:center"><div style="font-size:10px;color:var(--text3)">Disponible</div>'+
+        '<div style="font-size:13px;font-weight:600;color:var(--green);font-family:monospace">'+fmt(c.limite-c.saldo)+'</div></div>'+
+        '<div style="text-align:center"><div style="font-size:10px;color:var(--text3)">Pago</div>'+
+        '<div style="font-size:13px;font-weight:600;color:var(--amber);font-family:monospace">'+fmt(c.pago)+'</div></div></div>'+
+        '<div style="margin-top:8px;background:var(--surface2);border-radius:4px;height:4px;overflow:hidden">'+
+        '<div style="width:'+Math.min(100,util)+'%;height:4px;background:'+utilColor+';border-radius:4px"></div></div>'+
+        '</div>';
+    }).join('');
+  }
+
+  // Historial
+  const histEl = document.getElementById('mov-historial');
+  if(!histEl) return;
+  const movs = Object.values(STATE.movimientos||{}).sort((a,b)=>b.ts-a.ts);
+  if(!movs.length){
+    histEl.innerHTML='<div style="padding:14px 0;color:var(--text3);font-size:13px">Sin movimientos registrados</div>';
+    return;
+  }
+  histEl.innerHTML = movs.map(m=>{
+    const card = STATE.cards[m.tarjeta];
+    const cardName = card ? card.emoji+' '+card.nombre : m.tarjeta;
+    const date = new Date(m.ts).toLocaleDateString('es-MX',{day:'2-digit',month:'short'});
+    return '<div style="display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--border)">'+
+      '<div style="width:38px;height:38px;border-radius:10px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">'+
+      (m.tipo==='meses'?'📅':'💳')+'</div>'+
+      '<div style="flex:1;min-width:0">'+
+      '<div style="font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+m.desc+'</div>'+
+      '<div style="font-size:11px;color:var(--text2);margin-top:2px">'+cardName+' · '+date+
+      (m.tipo==='meses'?' · '+m.plazos+' meses de '+fmt(m.mensualidad):'')+'</div></div>'+
+      '<div style="text-align:right;flex-shrink:0">'+
+      '<div style="font-size:15px;font-weight:600;font-family:monospace;color:var(--red)">'+fmt(m.monto)+'</div>'+
+      '<div style="font-size:10px;color:var(--text3);margin-top:2px">'+(m.tipo==='meses'?'a meses':'contado')+'</div></div>'+
+      '<button data-movid="'+m.id+'" onclick="deleteMov(this.dataset.movid)" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;padding:4px;flex-shrink:0">×</button>'+
+      '</div>';
+  }).join('');
+}
+
+window.deleteMov = async (id) => {
+  const mov = STATE.movimientos[id];
+  if(!mov) return;
+  // If meses, remove all custom payments from this mov
+  if(mov.tipo === 'meses'){
+    const toDelete = Object.keys(STATE.customPayments||{}).filter(k=>k.startsWith('mov-'+id));
+    for(const k of toDelete){
+      delete STATE.customPayments[k];
+      await set(ref(db,'finanzas2026/customPayments/'+k),null);
+    }
+    // Restore card saldo
+    if(STATE.cards[mov.tarjeta]){
+      STATE.cards[mov.tarjeta].saldo = Math.max(0,(STATE.cards[mov.tarjeta].saldo||0)-mov.monto);
+      await update(dbRef,{['cards/'+mov.tarjeta+'/saldo']:STATE.cards[mov.tarjeta].saldo});
+    }
+  } else {
+    if(STATE.cards[mov.tarjeta]){
+      STATE.cards[mov.tarjeta].saldo = Math.max(0,(STATE.cards[mov.tarjeta].saldo||0)-mov.monto);
+      await update(dbRef,{['cards/'+mov.tarjeta+'/saldo']:STATE.cards[mov.tarjeta].saldo});
+    }
+  }
+  delete STATE.movimientos[id];
+  await set(ref(db,'finanzas2026/movimientos/'+id),null);
+  renderMovimientos(); renderPagos(); renderHome();
+  showToast('Movimiento eliminado','×');
+};
+
 window.goPage = (name) => {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.menu-item').forEach(b=>b.classList.remove('active'));
@@ -811,6 +1118,7 @@ window.goPage = (name) => {
   if(mi) mi.classList.add('active');
   if(name==='calendario') renderCalendar();
   if(name==='graficas') renderCharts();
+  if(name==='movimientos') renderMovimientos();
 };
 window.toggleMenu=()=>{document.getElementById('hamburger').classList.toggle('open');document.getElementById('side-menu').classList.toggle('open');document.getElementById('menu-overlay').classList.toggle('open');};
 window.closeMenu=()=>{document.getElementById('hamburger').classList.remove('open');document.getElementById('side-menu').classList.remove('open');document.getElementById('menu-overlay').classList.remove('open');};
